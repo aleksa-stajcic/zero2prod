@@ -1,19 +1,18 @@
 #![deny(clippy::implicit_return)]
 #![allow(clippy::needless_return)]
 
-use actix_web::{HttpRequest, Responder, HttpServer, App, web};
+use actix_web::{Responder, HttpServer, App, web, HttpResponse};
 
-async fn greet(req: HttpRequest) -> impl Responder {
-    let name = req.match_info().get("name").unwrap_or("World");
-    return format!("Hello {}!", &name);
+async fn health_check() -> impl Responder {
+    return HttpResponse::Ok();
 }
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
     return HttpServer::new(|| {
         return App::new()
-            .route("/", web::get().to(greet))
-            .route("/{name}", web::get().to(greet));
+            .route("/health_check", web::get().to(health_check))
+        ;
     })
     .bind("127.0.0.1:6969")?
     .run()
